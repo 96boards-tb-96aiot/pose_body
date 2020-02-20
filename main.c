@@ -47,7 +47,6 @@
 
 int MiniGUIMain(int argc, const char *argv[])
 {
-    register_ui_paint_refresh(ui_paint_refresh);
     register_shadow_display_vertical(shadow_display_vertical);
 
     if (rockx_control_init())

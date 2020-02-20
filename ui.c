@@ -44,6 +44,8 @@
 
 #include "shadow_display.h"
 
+#define ID_TIMER 100
+
 #define TEXT_SIZE 36
 
 static HWND g_main_hwnd = HWND_INVALID;
@@ -74,14 +76,33 @@ static void ui_paint(HWND hwnd)
     EndPaint(hwnd, hdc);
 }
 
+static void ui_paint_refresh(void)
+{
+    int ui_width, ui_height;
+    shadow_get_crop_screen(&ui_width, &ui_height);
+    RECT rect = {0, 0, ui_width, ui_height};
+    if (g_main_hwnd == HWND_INVALID)
+        return;
+    if (g_update)
+        InvalidateRect(g_main_hwnd, &rect, TRUE);
+    else
+        InvalidateRect(g_main_hwnd, &rect, FALSE);
+}
+
 static LRESULT ui_win_proc(HWND hwnd, UINT message, WPARAM w_param, LPARAM l_param)
 {
     HDC hdc;
 
     switch (message) {
     case MSG_CREATE:
+        SetTimer(hwnd, ID_TIMER, 3);
+        break;
+    case MSG_CLOSE:
+        KillTimer(hwnd, ID_TIMER);
         break;
     case MSG_TIMER:
+        if (w_param == ID_TIMER)
+            ui_paint_refresh();
         break;
     case MSG_PAINT:
         ui_paint(hwnd);
@@ -154,19 +175,4 @@ void ui_run(void)
     DestroyLogFont(g_font);
     DestroyMainWindow(g_main_hwnd);
     MainWindowThreadCleanup(g_main_hwnd);
-}
-
-void ui_paint_refresh(void)
-{
-    int ui_width, ui_height;
-    shadow_get_crop_screen(&ui_width, &ui_height);
-    RECT rect = {0, 0, ui_width, ui_height};
-    if (g_main_hwnd == HWND_INVALID)
-        return;
-    pthread_mutex_lock(&mutex);
-    if (g_update)
-        InvalidateRect(g_main_hwnd, &rect, TRUE);
-    else
-        InvalidateRect(g_main_hwnd, &rect, FALSE);
-    pthread_mutex_unlock(&mutex);
 }

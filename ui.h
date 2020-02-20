@@ -43,7 +43,6 @@ extern "C" {
 #include <minigui/window.h>
 
 void ui_run(void);
-void ui_paint_refresh(void);
 
 #ifdef __cplusplus
 }
