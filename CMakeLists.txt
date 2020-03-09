@@ -16,7 +16,7 @@ include_directories(${DRM_HEADER_DIR})
 
 add_executable(pose_body ${SRC})
 
-target_link_libraries(pose_body rkisp rkisp_api rockx rknn_api drm rga pthread ts minigui_ths png12 jpeg freetype sqlite3 asound)
+target_link_libraries(pose_body rkisp rkisp_api rockx rknn_api drm rga pthread ts minigui_ths png12 jpeg freetype)
 
 install(TARGETS pose_body DESTINATION bin)
 
